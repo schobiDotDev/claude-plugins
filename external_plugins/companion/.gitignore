@@ -1,0 +1,7 @@
+node_modules/
+config.yaml
+tts-server/.venv/
+tts-server/cache/
+tts-server/*.wav
+tts-server/*.pid
+tts-server/*.log

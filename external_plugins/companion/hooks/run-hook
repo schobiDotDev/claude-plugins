@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Hook runner - delegates to Node.js hook handlers
+# Usage: run-hook <hook-name>
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PLUGIN_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+HOOK_NAME="${1:-}"
+
+if [ -z "$HOOK_NAME" ]; then
+  echo "Usage: run-hook <hook-name>" >&2
+  exit 1
+fi
+
+HOOK_FILE="${PLUGIN_ROOT}/src/hooks/${HOOK_NAME}.mjs"
+
+if [ ! -f "$HOOK_FILE" ]; then
+  echo "Hook not found: ${HOOK_FILE}" >&2
+  exit 1
+fi
+
+exec node "$HOOK_FILE"

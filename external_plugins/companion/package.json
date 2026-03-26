@@ -1,0 +1,10 @@
+{
+  "name": "claude-companion",
+  "version": "0.1.0",
+  "description": "AI companion for Claude Code sessions - personality, voice, and session awareness",
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "js-yaml": "^4.1.0"
+  }
+}
