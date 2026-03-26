@@ -9,6 +9,11 @@
       "name": "discord-focus",
       "source": "./external_plugins/discord-focus",
       "description": "Discord channel with per-session channel focus filtering. Fork of discord@claude-plugins-official with focusChannels support."
+    },
+    {
+      "name": "companion",
+      "source": "./external_plugins/companion",
+      "description": "AI session companion with personality, voice, smart summaries, and notifications."
     }
   ]
 }

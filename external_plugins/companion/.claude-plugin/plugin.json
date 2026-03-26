@@ -1,0 +1,10 @@
+{
+  "name": "companion",
+  "description": "AI session companion with personality, voice (TTS), smart summaries, and notifications for Claude Code.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Felix Schoberwalter"
+  },
+  "license": "MIT",
+  "keywords": ["companion", "tts", "voice", "notifications", "session", "summary"]
+}
