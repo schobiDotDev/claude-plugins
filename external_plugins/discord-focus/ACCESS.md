@@ -110,6 +110,42 @@ Set `DISCORD_FOCUS_CHANNELS` to a comma-separated list of channel IDs. This take
 DISCORD_FOCUS_CHANNELS=846209781206941736 claude --channels plugin:discord@claude-plugins-official
 ```
 
+## Channel aliases
+
+Map short names to channel IDs for convenience. Aliases can be used anywhere a channel ID is accepted: `focusChannels`, `DISCORD_FOCUS_CHANNELS`, and the `focus_channels` tool.
+
+```
+/discord:access alias life 1486695196346548224
+/discord:access alias dev 1486695261492346921
+/discord:access alias rm life
+```
+
+Aliases are stored in `access.json`:
+
+```jsonc
+"channelAliases": {
+  "life": "1486695196346548224",
+  "dev": "1486695261492346921"
+}
+```
+
+## Multi-session (daemon mode)
+
+By default, the plugin runs a background daemon that holds the Discord gateway connection. Multiple Claude Code sessions can connect simultaneously, each focused on different channels.
+
+Each session subscribes to specific channels via `focusChannels`, `DISCORD_FOCUS_CHANNELS`, or the `focus_channels` tool at runtime. Messages are routed only to sessions that have subscribed to the relevant channel.
+
+Set `DISCORD_SINGLE_MODE=1` to bypass the daemon and connect directly to Discord (legacy single-session behavior).
+
+### Daemon management
+
+The daemon starts automatically when the first session connects. It runs until manually stopped:
+
+```
+/discord:access daemon stop
+kill $(cat ~/.claude/channels/discord/daemon.pid)
+```
+
 ## Skill reference
 
 | Command | Effect |
@@ -125,6 +161,10 @@ DISCORD_FOCUS_CHANNELS=846209781206941736 claude --channels plugin:discord@claud
 | `/discord:access set ackReaction 🔨` | Set a config key: `ackReaction`, `replyToMode`, `textChunkLimit`, `chunkMode`, `mentionPatterns`. |
 | `/discord:access focus 846...` | Set `focusChannels`. Comma-separated IDs. |
 | `/discord:access focus clear` | Remove focus filter — all allowlisted channels active. |
+| `/discord:access alias life 123...` | Set a channel alias. |
+| `/discord:access alias rm life` | Remove a channel alias. |
+| `/discord:access daemon stop` | Stop the background daemon. |
+| `/discord:access daemon status` | Show daemon status. |
 
 ## Config file
 
@@ -164,6 +204,12 @@ DISCORD_FOCUS_CHANNELS=846209781206941736 claude --channels plugin:discord@claud
   "chunkMode": "newline",
 
   // Restrict to these channels. Empty/missing = all.
-  "focusChannels": ["846209781206941736"]
+  "focusChannels": ["846209781206941736"],
+
+  // Short names mapped to channel IDs for convenience.
+  "channelAliases": {
+    "life": "1486695196346548224",
+    "dev": "1486695261492346921"
+  }
 }
 ```

@@ -59,7 +59,7 @@ Parse `$ARGUMENTS` (space-separated). If empty or unrecognized, show status.
 
 1. Read `~/.claude/channels/discord/access.json` (handle missing file).
 2. Show: dmPolicy, allowFrom count and list, pending count with codes +
-   sender IDs + age, groups count, **focusChannels (if set: list IDs, otherwise "all channels")**.
+   sender IDs + age, groups count, **focusChannels (if set: list IDs, otherwise "all channels")**, **channelAliases (if any: list name -> channelId mappings)**, **daemon status (running/stopped, PID if running)**.
 
 ### `pair <code>`
 
@@ -121,6 +121,32 @@ Parse `$ARGUMENTS` (space-separated). If empty or unrecognized, show status.
 2. Delete the `focusChannels` key (or set to empty array).
 3. Write back.
 4. Confirm: "Focus cleared — all allowlisted channels are now active."
+
+### `alias <name> <channelId>`
+
+1. Read `~/.claude/channels/discord/access.json` (create default if missing).
+2. Validate the channel ID looks like a snowflake (numeric string).
+3. Set `channelAliases[name] = channelId`.
+4. Write back.
+5. Confirm: "Alias set: name -> channelId"
+
+### `alias rm <name>`
+
+1. Read `~/.claude/channels/discord/access.json`.
+2. Delete `channelAliases[name]`.
+3. Write back.
+4. Confirm: "Alias removed: name"
+
+### `daemon stop`
+
+1. Read `~/.claude/channels/discord/daemon.pid`.
+2. Send SIGTERM to the PID.
+3. Confirm: "Daemon stopped."
+
+### `daemon status`
+
+1. Check if `daemon.pid` exists and process is alive.
+2. Show: running/stopped, PID if running.
 
 ### `set <key> <value>`
 

@@ -91,6 +91,10 @@ Quick reference: IDs are Discord **snowflakes** (numeric — enable Developer Mo
 
 Scope a session to specific channels with `focusChannels` in `access.json`, or the `DISCORD_FOCUS_CHANNELS` environment variable. See **[ACCESS.md](./ACCESS.md)** for details.
 
+## Multi-session
+
+Multiple Claude Code sessions can each focus on different Discord channels simultaneously. The plugin runs a background daemon that holds the Discord connection and routes messages to the right session. See **[ACCESS.md](./ACCESS.md)** for details.
+
 ## Tools exposed to the assistant
 
 | Tool | Purpose |
