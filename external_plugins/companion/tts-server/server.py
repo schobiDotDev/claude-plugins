@@ -98,10 +98,10 @@ def generate_and_play(text: str, voice: str, lang: str, speed: float):
         verbose=False,
     )
 
-    # Play the generated wav file
+    # Play the generated wav file (blocking - waits until audio finishes)
     wav_path = CACHE_DIR / "tts_000.wav"
     if wav_path.exists():
-        subprocess.Popen(
+        subprocess.run(
             ["afplay", str(wav_path)],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
