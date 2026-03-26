@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "discord-focus",
-      "source": "external_plugins/discord-focus",
+      "source": "./external_plugins/discord-focus",
       "description": "Discord channel with per-session channel focus filtering. Fork of discord@claude-plugins-official with focusChannels support."
     }
   ]
