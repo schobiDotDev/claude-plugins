@@ -1,0 +1,17 @@
+{
+  "name": "discord-focus",
+  "description": "Discord channel for Claude Code with per-session channel focus filtering. Fork of discord@claude-plugins-official with focusChannels support.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Felix Schoberwalter"
+  },
+  "repository": "https://github.com/schobidotdev/claude-channel-discord",
+  "license": "Apache-2.0",
+  "keywords": [
+    "discord",
+    "messaging",
+    "channel",
+    "mcp",
+    "focus"
+  ]
+}
