@@ -75,6 +75,15 @@ if (!TOKEN) {
 // PID file & cleanup
 // ---------------------------------------------------------------------------
 
+function isProcessAlive(pid: number): boolean {
+  try {
+    process.kill(pid, 0)
+    return true
+  } catch {
+    return false
+  }
+}
+
 mkdirSync(STATE_DIR, { recursive: true, mode: 0o700 })
 writeFileSync(DAEMON_PID, String(process.pid), { mode: 0o600 })
 
@@ -718,6 +727,10 @@ function handleIpcMessage(data: IpcToDaemon, socketRef: object): void {
       const session = sessions.get(data.sessionId)
       if (!session) {
         process.stderr.write(`discord daemon: tool call from unknown session ${data.sessionId}\n`)
+        const sock = socketForRef.get(socketRef)
+        if (sock) {
+          sock.write(JSON.stringify({ type: 'tool_error', callId: data.callId, error: 'session not registered - call subscribe first' }) + '\n')
+        }
         return
       }
       const sessionFocus = session.channels
@@ -755,7 +768,14 @@ const socketForRef = new Map<object, { write: (data: string | Uint8Array) => num
 // Per-socket line buffer for JSON-Lines parsing
 const socketBuffers = new Map<object, string>()
 
-// Remove stale socket file before listening
+// Remove stale socket file before listening, but bail if another daemon owns it
+try {
+  const existingPid = parseInt(readFileSync(DAEMON_PID, 'utf8').trim(), 10)
+  if (existingPid !== process.pid && isProcessAlive(existingPid)) {
+    process.stderr.write(`discord daemon: another daemon (PID ${existingPid}) is already running, exiting\n`)
+    process.exit(0)
+  }
+} catch {}
 try { unlinkSync(DAEMON_SOCK) } catch {}
 
 Bun.listen({
