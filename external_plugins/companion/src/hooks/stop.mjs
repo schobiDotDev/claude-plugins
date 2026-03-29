@@ -48,14 +48,15 @@ process.stdin.on('end', async () => {
 
   const project = hookData.cwd ? hookData.cwd.split('/').pop() : '';
 
-  notify({
-    title: companion.name,
-    subtitle: project,
-    message,
-    config,
-  });
-
+  // One notification, not both - TTS takes priority when enabled
   if (config.notify.tts_on_stop) {
     await enqueue(message, companion, config);
+  } else {
+    notify({
+      title: companion.name,
+      subtitle: project,
+      message,
+      config,
+    });
   }
 });

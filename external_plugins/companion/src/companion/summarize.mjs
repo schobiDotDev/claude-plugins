@@ -30,8 +30,15 @@ function bumpLevel(level) {
 }
 
 export async function generateStopSummary(companion, config, { transcriptPath, lastAssistantMessage, sinceLineNumber = 0 }) {
-  const context = transcriptPath
-    ? formatTranscriptForLLM(readTranscript(transcriptPath, 8, sinceLineNumber))
+  const transcript = transcriptPath
+    ? readTranscript(transcriptPath, 8, sinceLineNumber)
+    : [];
+
+  // Too few new messages since last stop - skip LLM, use static message
+  if (transcript.length < 2 && !lastAssistantMessage) return null;
+
+  const context = transcript.length > 0
+    ? formatTranscriptForLLM(transcript)
     : lastAssistantMessage || '';
 
   if (!context) return null;
