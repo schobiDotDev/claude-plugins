@@ -4,7 +4,7 @@ import { join } from 'node:path';
 const STATE_PATH = join(process.env.HOME, '.companion-sessions.json');
 const MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
-function loadState() {
+export function loadState() {
   if (!existsSync(STATE_PATH)) return { sessions: {}, introduced: [] };
   try {
     return JSON.parse(readFileSync(STATE_PATH, 'utf8'));
@@ -13,7 +13,7 @@ function loadState() {
   }
 }
 
-function saveState(state) {
+export function saveState(state) {
   writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
 }
 

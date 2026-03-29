@@ -2,6 +2,7 @@ import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { complete } from '../llm/index.mjs';
 import { readTranscript, formatTranscriptForLLM } from '../session/transcript.mjs';
+import { loadState, saveState } from '../session/persistence.mjs';
 
 const SESSIONS_DIR = join(process.env.HOME, '.claude', 'sessions');
 const MIN_LINES_TO_NAME = 6;
@@ -17,18 +18,26 @@ function findSessionFile(sessionId) {
   return null;
 }
 
-function getSessionData(path) {
-  return JSON.parse(readFileSync(path, 'utf8'));
+function writeNameToSessionFile(sessionId, name) {
+  const file = findSessionFile(sessionId);
+  if (!file) return;
+  const data = JSON.parse(readFileSync(file, 'utf8'));
+  data.name = name;
+  writeFileSync(file, JSON.stringify(data));
 }
 
 export async function generateSessionName(sessionId, config, { transcriptPath, sinceLineNumber = 0 }) {
   if (!transcriptPath || !config.llm?.base_url) return;
 
-  const sessionFile = findSessionFile(sessionId);
-  if (!sessionFile) return;
+  const state = loadState();
+  const session = state.sessions?.[sessionId];
+  if (!session) return;
 
-  const data = getSessionData(sessionFile);
-  if (data.name) return; // already named
+  // Already named? Just make sure the session file has it too
+  if (session.sessionName) {
+    writeNameToSessionFile(sessionId, session.sessionName);
+    return;
+  }
 
   // Wait until there's enough context
   const transcript = readTranscript(transcriptPath, 12);
@@ -54,6 +63,10 @@ export async function generateSessionName(sessionId, config, { transcriptPath, s
   const clean = name.trim().toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 60);
   if (!clean || clean.length < 3) return;
 
-  data.name = clean;
-  writeFileSync(sessionFile, JSON.stringify(data));
+  // Persist in companion state (survives session restart)
+  session.sessionName = clean;
+  saveState(state);
+
+  // Also write to Claude's session file
+  writeNameToSessionFile(sessionId, clean);
 }
