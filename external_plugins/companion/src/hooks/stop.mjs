@@ -2,6 +2,7 @@ import { loadConfig } from '../config.mjs';
 import { loadCompanion, pickRandom } from '../companion/index.mjs';
 import { getSessionCompanion, getLastStopLine, setLastStopLine } from '../session/persistence.mjs';
 import { generateStopSummary } from '../companion/summarize.mjs';
+import { generateSessionName } from '../companion/namer.mjs';
 import { getTranscriptLineCount } from '../session/transcript.mjs';
 import { enqueue } from '../tts/queue.mjs';
 import { notify } from '../notify/index.mjs';
@@ -47,6 +48,11 @@ process.stdin.on('end', async () => {
   }
 
   const project = hookData.cwd ? hookData.cwd.split('/').pop() : '';
+
+  // Name the session if not yet named
+  try {
+    await generateSessionName(sessionId, config, { transcriptPath, sinceLineNumber });
+  } catch {}
 
   // One notification, not both - TTS takes priority when enabled
   if (config.notify.tts_on_stop) {
